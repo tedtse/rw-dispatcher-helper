@@ -5,9 +5,9 @@ import { camelCase, paramCase as kebebCase, titleCase } from 'change-case'
 
 export * from './tick-emitter'
 
-const getRender: (tag: string, options: object) => Function =
+const getRender: (tag: string, options: object) => Function | undefined =
   (tag: string, options: object = {}) => {
-    return _.get(options, `readStateRender.${camelCase(tag)}`, _.noop)
+    return _.get(options, `readStateRender.${camelCase(tag)}`)
   }
 
 export type RWState = 'read' | 'write'
@@ -83,27 +83,28 @@ export default {
     }
     return { uuid, readStateData }
   },
-  findComponentByUuid (formItems: Vue[] | Element[], uuidAttribute: string, uuid: string): [VNode, Vue | undefined] {
-    // let uuidVnode!: VNode
-    // let formItem: Vue | undefined
-    let result!: [VNode, Vue | undefined]
+  findComponentByUuid (formItems: Vue[] | Element[], uuidAttribute: string, uuid: string): any {
+    let uuidVnode!: VNode
+    let formItem: Vue | undefined
     const travese = (vnode: VNode): boolean => {
-      const children = vnode.children || []
+      const children = vnode.componentOptions
+        ? vnode.componentOptions.children || []
+        : []
       return children.some((item: VNode): boolean => {
         if (_.get(item, `data.attrs.${uuidAttribute}`, '') === uuid) {
-          result = [item, vnode.context]
+          uuidVnode = item
+          formItem = vnode.context
           return true
-        } else if (item.children) {
+        } else if (item.componentOptions) {
           travese(item)
         }
         return false
       })
     }
     formItems.some((item: VueComponent): boolean => {
-      return travese((item as any)._vnode)
-      // return travese((<any>item)._vnode)
+      return travese((item as any).$vnode)
     })
-    return result
+    return { uuidVnode, formItem }
   },
   findFormItems (parent: Vue): Vue[] {
     const result: Vue[] = []
@@ -165,7 +166,7 @@ export default {
         action: (h: CreateElement, context: RWState, options: any = {}): VNode | VNode[] => {
           const { namespace } = options
           const localConfig = _.get(context, `injections.${camelCase(namespace)}Provider.${camelCase(namespace)}Config`, {})
-          const render = getRender(tag, localConfig)
+          const render = getRender(tag, localConfig) || _.noop
           return render(h, context)
         }
       },
@@ -175,7 +176,7 @@ export default {
           return this.isReadStateAndGlobalRender(context, state, options, tag)
         },
         action: (h: CreateElement, context: RenderContext, options: any = {}): VNode | VNode[] => {
-          const render = getRender(tag, options)
+          const render = getRender(tag, options) || _.noop
           return render(h, context.data)
         }
       }

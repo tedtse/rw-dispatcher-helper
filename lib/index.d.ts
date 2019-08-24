@@ -17,7 +17,7 @@ declare const _default: {
     getDispatcherProp(context: RenderContext<Record<string, any>>, namespace: string, suffix: string): any;
     genReadStateClass(prefix: string | undefined, tag: string, size: string | undefined): any;
     wrapContext(context: RenderContext<Record<string, any>>, uuidAttribute: string, clsPrefix: string | undefined, clsSuffix: string): object;
-    findComponentByUuid(formItems: Element[] | Vue[], uuidAttribute: string, uuid: string): [VNode, Vue | undefined];
+    findComponentByUuid(formItems: Element[] | Vue[], uuidAttribute: string, uuid: string): any;
     findFormItems(parent: Vue): Vue[];
     findComponentByName(child: Vue, name: string): Vue;
     genRenderRules(tag: string): ({
