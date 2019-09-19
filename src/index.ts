@@ -64,26 +64,26 @@ export default {
     const key: string = `${camelCase(namespace)}${titleCase(suffix)}`
     return _.get(context, `data.attrs.${kebebCase(key)}`) || _.get(context, `data.attrs.${camelCase(key)}`)
   },
-  genReadStateClass (prefix: string = '', tag: string, size: string | undefined): any {
-    const sizeEnd: string[] = size ? [`${tag}--${size}`] : []
-    const bems: string[] = [tag, ...sizeEnd]
+  genReadStateClass (prefix: string = '', tag: string, size: string | undefined, modifierSeparator: string): any {
+    const sizeEnd: string[] = size ? [`${tag}${modifierSeparator}${size}`] : []
+    const elements: string[] = [tag, ...sizeEnd]
     const result: ClassProps = {}
-    bems.forEach(key => {
+    elements.forEach(key => {
       result[`${prefix}-${key}`] = true
     })
     return result
   },
-  wrapContext (context: RenderContext, uuidAttribute: string, clsPrefix: string = '', clsSuffix: string): object {
+  wrapContext (context: RenderContext, uuidAttribute: string, clsPrefix: string = '', clsSuffix: string, modifierSeparator: string): object {
     const uuid: string = UUID()
     const selfSize: string | undefined = _.get(context, 'data.attrs.size')
     const readStateData: object = {
       attrs: { [uuidAttribute]: uuid },
       style: _.get(context, 'data.staticStyle'),
-      'class': this.genReadStateClass(clsPrefix, clsSuffix, selfSize)
+      'class': this.genReadStateClass(clsPrefix, clsSuffix, selfSize, modifierSeparator)
     }
     return { uuid, readStateData }
   },
-  findComponentByUuid (formItems: Vue[] | Element[], uuidAttribute: string, uuid: string): any {
+  findComponentByUUID (formItems: Vue[] | Element[], uuidAttribute: string, uuid: string, tagName: string): any {
     let uuidVnode!: VNode
     let formItem: Vue | undefined
     const travese = (vnode: VNode): boolean => {
@@ -93,7 +93,7 @@ export default {
       return children.some((item: VNode): boolean => {
         if (_.get(item, `data.attrs.${uuidAttribute}`, '') === uuid) {
           uuidVnode = item
-          formItem = vnode.context
+          formItem = this.findComponentByName(vnode.componentInstance as Vue, tagName)
           return true
         } else if (item.componentOptions) {
           travese(item)
@@ -106,11 +106,11 @@ export default {
     })
     return { uuidVnode, formItem }
   },
-  findFormItems (parent: Vue): Vue[] {
+  findFormItems (parent: Vue, name: string): Vue[] {
     const result: Vue[] = []
     const travese = (component: Vue) => {
       component.$children.forEach((item: Vue) => {
-        if (_.get(item, '$options.name', '') === 'ElFormItem') {
+        if (_.get(item, '$options.name', '') === name) {
           result.push(item)
         } else if (item.$children) {
           travese(item)
@@ -120,16 +120,19 @@ export default {
     travese(parent)
     return result
   },
-  findComponentByName (child: Vue, name: string): Vue {
-    let parent = child.$parent
-    while (parent) {
-      if (name === parent.$options.name) {
+  findComponentByName (child: Vue, name: string): Vue | undefined {
+    if (child === undefined || name === undefined) {
+      return undefined
+    }
+    let target = child
+    while (target) {
+      if (name === target.$options.name) {
         break
       } else {
-        parent = parent.$parent
+        target = target.$parent
       }
     }
-    return parent
+    return target
   },
   genRenderRules (tag: string) {
     return [
@@ -177,7 +180,7 @@ export default {
         },
         action: (h: CreateElement, context: RenderContext, options: any = {}): VNode | VNode[] => {
           const render = getRender(tag, options) || _.noop
-          return render(h, context.data)
+          return render(h, context)
         }
       }
     ]

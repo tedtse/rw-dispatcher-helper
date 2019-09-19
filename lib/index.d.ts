@@ -15,11 +15,11 @@ declare const _default: {
     isReadStateAndNotRener(context: RenderContext<Record<string, any>>, state: RWState): any;
     getInjections(providerName: string | symbol): any;
     getDispatcherProp(context: RenderContext<Record<string, any>>, namespace: string, suffix: string): any;
-    genReadStateClass(prefix: string | undefined, tag: string, size: string | undefined): any;
-    wrapContext(context: RenderContext<Record<string, any>>, uuidAttribute: string, clsPrefix: string | undefined, clsSuffix: string): object;
-    findComponentByUuid(formItems: Element[] | Vue[], uuidAttribute: string, uuid: string): any;
-    findFormItems(parent: Vue): Vue[];
-    findComponentByName(child: Vue, name: string): Vue;
+    genReadStateClass(prefix: string | undefined, tag: string, size: string | undefined, modifierSeparator: string): any;
+    wrapContext(context: RenderContext<Record<string, any>>, uuidAttribute: string, clsPrefix: string | undefined, clsSuffix: string, modifierSeparator: string): object;
+    findComponentByUUID(formItems: Element[] | Vue[], uuidAttribute: string, uuid: string, tagName: string): any;
+    findFormItems(parent: Vue, name: string): Vue[];
+    findComponentByName(child: Vue, name: string): Vue | undefined;
     genRenderRules(tag: string): ({
         match: (context: RenderContext<Record<string, any>>, state: RWState, options?: any) => boolean;
         action: (h: CreateElement, context: RenderContext<Record<string, any>>) => VNode | VNode[];
