@@ -1,6 +1,6 @@
 {
   "name": "rw-dispatcher-helper",
-  "version": "0.0.0-alpha",
+  "version": "0.1.0-beta",
   "main": "lib/index.umd.js",
   "module": "lib/index.js",
   "typings": "./lib/index.d.ts",
