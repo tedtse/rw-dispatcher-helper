@@ -17,7 +17,7 @@ export interface ClassProps {
 }
 
 export default {
-  // 读转态
+  // 读状态
   isReadState (state: RWState): boolean {
     return state === 'read'
   },
@@ -25,7 +25,7 @@ export default {
   isWriteState (state: RWState): boolean {
     return state === 'write'
   },
-  // 读转态且存在 readStateRender 插槽
+  // 读状态且存在 readStateRender 插槽
   isReadStateAndSlotRender (context: RenderContext, state: RWState, options: any): boolean {
     const renderKey: string = camelCase(`${options.namespace}Render`)
     return this.isReadState(state) && _.get(context, `scopedSlots.${renderKey}`, false)
@@ -35,19 +35,19 @@ export default {
     const render: Function | undefined = this.getDispatcherProp(context, options.namespace, 'render')
     return this.isReadState(state) && typeof render === 'function'
   },
-  // 读转态且存在该组件的局部渲染函数
+  // 读状态且存在该组件的局部渲染函数
   isReadStateAndLocalRender (context: RenderContext, state: RWState, options: any, tag: string): boolean {
     const { namespace } = options
     const localConfig: object = _.get(context, `injections.${camelCase(namespace)}Provider.${camelCase(namespace)}Config`, {})
     const render: Function | undefined = getRender(tag, localConfig)
     return this.isReadState(state) && typeof render === 'function'
   },
-  // 读转态且存在该组件的全局渲染函数
+  // 读状态且存在该组件的全局渲染函数
   isReadStateAndGlobalRender (context: RenderContext, state: RWState, options: any, tag: string): boolean {
     const render: Function | undefined = getRender(tag, options)
     return this.isReadState(state) && typeof render === 'function'
   },
-  // 读转态且不存在 readStateRender 插槽
+  // 读状态且不存在 readStateRender 插槽
   isReadStateAndNotRener (context: RenderContext, state: RWState) {
     return this.isReadState(state) && _.get(context, 'scopedSlots.readStateRender', true)
   },
@@ -137,7 +137,7 @@ export default {
   genRenderRules (tag: string) {
     return [
       {
-        // 写转态
+        // 写状态
         match: (context: RenderContext, state: RWState, options: any = {}): boolean => (this.isWriteState(state)),
         action: (h: CreateElement, context: RenderContext): VNode | VNode[] => {
           const { data, children } = context
@@ -162,7 +162,7 @@ export default {
         }
       },
       {
-        // 读转态且存在该组件的局部渲染函数
+        // 读状态且存在该组件的局部渲染函数
         match: (context: RenderContext, state: RWState, options: any = {}): boolean => {
           return this.isReadStateAndLocalRender(context, state, options, tag)
         },
@@ -174,7 +174,7 @@ export default {
         }
       },
       {
-        // 读转态且存在该组件的全局渲染函数
+        // 读状态且存在该组件的全局渲染函数
         match: (context: RenderContext, state: RWState, options: any = {}): boolean => {
           return this.isReadStateAndGlobalRender(context, state, options, tag)
         },
