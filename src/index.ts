@@ -79,7 +79,8 @@ export default {
     const readStateData: object = {
       attrs: { [uuidAttribute]: uuid },
       style: _.get(context, 'data.staticStyle'),
-      'class': this.genReadStateClass(clsPrefix, clsSuffix, selfSize, modifierSeparator)
+      'class': this.genReadStateClass(clsPrefix, clsSuffix, selfSize, modifierSeparator),
+      on: _.get(context, 'data.on')
     }
     return { uuid, readStateData }
   },
