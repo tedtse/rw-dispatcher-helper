@@ -15,7 +15,7 @@
     "@types/lodash": "^4.14.137",
     "@types/uuid": "^3.4.5",
     "change-case": "^3.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {
